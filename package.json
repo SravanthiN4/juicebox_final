@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "seed:dev": "nodemon ./db/seed.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/SravanthiN4/juicebox_final/issues"
   },
-  "homepage": "https://github.com/SravanthiN4/juicebox_final#readme"
+  "homepage": "https://github.com/SravanthiN4/juicebox_final#readme",
+  "dependencies": {
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
 }
