@@ -33,6 +33,21 @@ async function getPostsByUser(userId) {
     }
   }
 
+  async function getUserById(userId) {
+      const {rows} = await client.query(`
+        select * from users 
+        where id = ${userId}
+      `);
+      if(rows.length === 0) {
+          return null;
+      } else {
+          delete rows.password;
+            console.log(rows)
+          rows.posts =  await getPostsByUser(1);
+      }
+      return rows;
+  }
+
 async function createUser({username,password, name, location}) {
     try {
         const {rows} = await client.query(`
@@ -115,5 +130,6 @@ module.exports = {
     getAllPosts,
     createPosts,
     updatePosts,
-    getPostsByUser
+    getPostsByUser,
+    getUserById
 }

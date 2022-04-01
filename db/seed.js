@@ -1,5 +1,6 @@
 // db/seed.js
 
+const { user } = require('pg/lib/defaults');
 const {
     client,
     getAllUsers,
@@ -8,7 +9,8 @@ const {
     getAllPosts,
     createPosts,
     updatePosts,
-    getPostsByUser
+    getPostsByUser,
+    getUserById
   } = require('./index');
 
  
@@ -83,6 +85,23 @@ const {
     }
 }
 
+
+async function createInitialPosts() {
+    try {
+      const [albert, sandra, glamgal] = await getAllUsers();
+  
+      await createPosts({
+        authorId: albert.id,
+        title: "First Post",
+        content: "This is my first post. I hope I love writing blogs as much as I love writing them."
+      });
+  
+      // a couple more
+    } catch (error) {
+      throw error;
+    }
+  }
+
 async function createPostContent() {
     try {
         console.log("Starting to create posts..");
@@ -104,6 +123,7 @@ async function rebuildDB() {
       await createTables();
       await createInitialUsers();
       await createPostContent();
+      await createInitialPosts();
     } catch (error) {
       throw error;
     }
@@ -149,6 +169,11 @@ async function rebuildDB() {
       const grabbedUser = 1;
       const postsByUser = await getPostsByUser(grabbedUser);
       console.log("PostsbyUser", postsByUser);
+
+      console.log("Calling getuserbyid....")
+      const userById = await getUserById(grabbedUser);
+      
+      console.log("userById", userById);
   
       console.log("Finished database tests!");
     } catch (error) {
