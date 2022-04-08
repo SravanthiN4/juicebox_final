@@ -3,11 +3,17 @@ const client = new Client('postgres://localhost:5432/juicebox-dev-final');
 
 
 async function getAllUsers() {
-    const {rows} = await client.query(`
+    try {
+        const {rows} = await client.query(`
         select id,username, name, location, active 
         from users;
     `)
     return rows;
+        
+    } catch (error) {
+        throw error;
+    }
+    
     
 }
 
@@ -51,18 +57,23 @@ async function getPostsByUser(userId) {
   }
 
   async function getUserById(userId) {
-      const {rows} = await client.query(`
-        select * from users 
-        where id = ${userId}
+    try {
+      const { rows: [ user ] } = await client.query(`
+        SELECT id, username, name, location, active
+        FROM users
+        WHERE id=${ userId }
       `);
-      if(rows.length === 0) {
-          return null;
-      } else {
-          delete rows.password;
-            //console.log(rows)
-          rows.posts =  await getPostsByUser(1);
+  
+      if (!user) {
+        return null
       }
-      return rows;
+  
+      user.posts = await getPostsByUser(userId);
+  
+      return user;
+    } catch (error) {
+      throw error;
+    }
   }
 
 async function createUser({username,password, name, location}) {
@@ -72,7 +83,7 @@ async function createUser({username,password, name, location}) {
         ON CONFLICT (username) DO NOTHING
         RETURNING *;
 `, [ username, password, name, location ]);
-        return rows;
+        return user;
     } catch (error) {
         throw error;
     }
@@ -215,6 +226,19 @@ async function createPostTag(postId, tagId) {
     }
   } 
 
+  async function getAllTags() {
+    try {
+      const { rows } = await client.query(`
+        SELECT * 
+        FROM tags;
+      `);
+  
+      return { rows }
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
     async function updateUser(id, fields = {}) {
     // build the set string
@@ -304,6 +328,7 @@ module.exports = {
     createPostTag,
     addTagsToPost,
     getPostById,
-    getPostsByTagName
+    getPostsByTagName,
+    getAllTags
    
 }
